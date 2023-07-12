@@ -19,6 +19,11 @@ start() {
   if [ -n "$ZRAM_COMPRESSION_ALGO" ]; then
     echo "$ZRAM_COMPRESSION_ALGO" > /sys/block/zram0/comp_algorithm
   fi
+
+  if [ -n "$ZRAM_WRITEBACK_DEV" ]; then
+    echo "$ZRAM_WRITEBACK_DEV" > /sys/block/zram0/backing_dev
+  fi
+
   echo $MEM > /sys/block/zram0/disksize
 
   if [ -n "$ZRAM_MEM_LIMIT" ]; then
