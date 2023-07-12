@@ -20,6 +20,11 @@ start() {
     echo "$ZRAM_COMPRESSION_ALGO" > /sys/block/zram0/comp_algorithm
   fi
   echo $MEM > /sys/block/zram0/disksize
+
+  if [ -n "$ZRAM_MEM_LIMIT" ]; then
+    echo "$ZRAM_MEM_LIMIT" > /sys/block/zram0/mem_limit
+  fi
+
   mkswap /dev/zram0 -L zram0
   swapon -p 100 /dev/zram0
 }
