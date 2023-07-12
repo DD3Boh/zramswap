@@ -21,6 +21,9 @@ start() {
   fi
 
   if [ -n "$ZRAM_WRITEBACK_DEV" ]; then
+    if [[ ! -z $(swapon | grep "$ZRAM_WRITEBACK_DEV") ]]; then
+      swapoff $ZRAM_WRITEBACK_DEV
+    fi
     echo "$ZRAM_WRITEBACK_DEV" > /sys/block/zram0/backing_dev
   fi
 
