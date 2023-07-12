@@ -8,7 +8,7 @@ start() {
   if [ ! "$ZRAM_SIZE_PERCENT" ]; then
     ZRAM_SIZE_PERCENT=20
   fi
-  (( MEM_TOTAL= `cat /proc/meminfo|grep MemTotal|awk '{print $2}'` * 1024 ))
+  (( MEM_TOTAL= `cat /proc/meminfo | grep MemTotal | awk '{print $2}'` * 1024 ))
   (( MEM= MEM_TOTAL * $ZRAM_SIZE_PERCENT / 100 ))
   modprobe zram
   if [ -n "$ZRAM_COMPRESSION_ALGO" ]; then
