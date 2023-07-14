@@ -7,7 +7,7 @@
 # Contributor: mystilleef
 
 pkgname=zramswap
-pkgver=6
+pkgver=7
 pkgrel=1
 pkgdesc="Sets up zram-based swap devices on boot"
 arch=('any')
@@ -18,8 +18,8 @@ backup=("etc/zramswap.conf")
 source=("zramctrl"
         "zramswap.conf"
         "zramswap.service")
-md5sums=('3792bc5f4f581b84188c8430a4061938'
-         'f316261875a100f03d82ba377b3e5abd'
+md5sums=('7f3b6273d07e81f402e30596b504ed88'
+         '5c48da68a55babc058b5d879bc5bf75d'
          'a6c029dc942c85704b0f6ac1ca078a24')
 
 package() {
