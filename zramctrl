@@ -5,40 +5,55 @@ if [ -f /etc/zramswap.conf ]; then
 fi
 
 start() {
-  if [ -n "$ZRAM_DISK_SIZE" ]; then
-    MEM="$ZRAM_DISK_SIZE"
-  else
-    if [ ! "$ZRAM_SIZE_PERCENT" ]; then
-      ZRAM_SIZE_PERCENT=20
+  if [ -z "$ZRAM_DISKS_NUM" ]; then
+    ZRAM_DISKS_NUM=1
+  fi
+  ZRAM_DISKS_NUM=$((ZRAM_DISKS_NUM - 1))
+
+  disks_array=()
+  for ((i = 0; i <= ZRAM_DISKS_NUM; i++)); do
+    if [ -n "$ZRAM_DISK_SIZE$i" ]; then
+      MEM="$ZRAM_DISK_SIZE$i"
+    else
+      if [ ! "$ZRAM_SIZE_PERCENT$i" ]; then
+        ((ZRAM_SIZE_PERCENT$i = 20))
+      fi
+      (( MEM_TOTAL= `cat /proc/meminfo | grep MemTotal | awk '{print $2}'` * 1024 ))
+      (( MEM= MEM_TOTAL * "$ZRAM_SIZE_PERCENT$i" / 100 ))
     fi
-    (( MEM_TOTAL= `cat /proc/meminfo | grep MemTotal | awk '{print $2}'` * 1024 ))
-    (( MEM= MEM_TOTAL * $ZRAM_SIZE_PERCENT / 100 ))
-  fi
 
-  modprobe zram
-  if [ -n "$ZRAM_COMPRESSION_ALGO" ]; then
-    echo "$ZRAM_COMPRESSION_ALGO" > /sys/block/zram0/comp_algorithm
-  fi
-
-  if [ -n "$ZRAM_WRITEBACK_DEV" ]; then
-    if [[ ! -z $(swapon | grep "$ZRAM_WRITEBACK_DEV") ]]; then
-      swapoff $ZRAM_WRITEBACK_DEV
+    modprobe zram
+    if [ -n "$ZRAM_COMPRESSION_ALGO$i" ]; then
+      echo "$ZRAM_COMPRESSION_ALGO$i" > "/sys/block/zram$i/comp_algorithm"
     fi
-    echo "$ZRAM_WRITEBACK_DEV" > /sys/block/zram0/backing_dev
-  fi
 
-  echo $MEM > /sys/block/zram0/disksize
+    if [ -n "$ZRAM_WRITEBACK_DEV$i" ]; then
+      if [[ ! -z $(swapon | grep "$ZRAM_WRITEBACK_DEV$i") ]]; then
+        swapoff "$ZRAM_WRITEBACK_DEV$i"
+      fi
+      echo "$ZRAM_WRITEBACK_DEV$i" > "/sys/block/zram$i/backing_dev"
+    fi
 
-  if [ -n "$ZRAM_MEM_LIMIT" ]; then
-    echo "$ZRAM_MEM_LIMIT" > /sys/block/zram0/mem_limit
-  fi
+    echo $MEM > "/sys/block/zram$i/disksize"
 
-  mkswap /dev/zram0 -L zram0
-  swapon -p 100 /dev/zram0
+    if [ -n "$ZRAM_MEM_LIMIT$i" ]; then
+      echo "$ZRAM_MEM_LIMIT$i" > "/sys/block/zram$i/mem_limit"
+    fi
+
+    mkswap "/dev/zram$i" -L "zram$i"
+    swapon -p 100 "/dev/zram$i"
+  done
 }
 
 stop() {
-  swapoff /dev/zram0
+  if [ -z "$ZRAM_DISKS_NUM" ]; then
+    ZRAM_DISKS_NUM=1
+  fi
+  ZRAM_DISKS_NUM=$((ZRAM_DISKS_NUM - 1))
+  disks_array=()
+  for ((i = 0; i <= ZRAM_DISKS_NUM; i++)); do
+    swapoff "/dev/zram$i"
+  done
   rmmod zram
 }
 
