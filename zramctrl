@@ -58,7 +58,11 @@ start() {
     fi
 
     mkswap "/dev/zram$i" -L "zram$i"
-    swapon -p 100 "/dev/zram$i"
+
+    if [ -z "$(get_comp_var ZRAM_PRIORITY $i)" ]; then
+      set_comp_var ZRAM_PRIORITY $i 100
+    fi
+    swapon -p "$(get_comp_var ZRAM_PRIORITY $i)" "/dev/zram$i"
   done
 }
 
