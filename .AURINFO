@@ -1,4 +1,4 @@
-pkgbase = zramswap
+pkgbase = zramswap-advanced
 	pkgdesc = Sets up zram-based swap devices on boot
 	pkgver = 1.1
 	pkgrel = 1
@@ -9,5 +9,5 @@ pkgbase = zramswap
 	source = zramctrl
 	source = zramswap.service
 
-pkgname = zramswap
+pkgname = zramswap-advanced
 

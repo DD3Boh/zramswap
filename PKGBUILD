@@ -6,7 +6,7 @@
 # Contributor: adee
 # Contributor: mystilleef
 
-pkgname=zramswap
+pkgname=zramswap-advanced
 pkgver=7
 pkgrel=1
 pkgdesc="Sets up zram-based swap devices on boot"
